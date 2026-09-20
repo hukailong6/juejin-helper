@@ -26,6 +26,7 @@ ${growth.checkedIn ? `签到 +${growth.incrPoint} 矿石` : '今日已签到'}
 累计签到天数 ${growth.sumCount}
 当前幸运值 ${growth.luckyValue}
 免费抽奖次数 ${growth.freeCount}
+${growth.freeDrawed ? `恭喜抽中 ${growth.lotteryName}` : '暂无免费抽奖次数'}
 `.trim()
 }
 
@@ -60,6 +61,13 @@ const main = async () => {
   // 免费抽奖
   const lotteryConfig = await juejin.getLotteryConfig()
   growth.freeCount = lotteryConfig.free_count || 0
+
+  if (growth.freeCount > 0) {
+    const lottery = await juejin.drawLottery()
+
+    growth.freeDrawed = true
+    growth.lotteryName = lottery.lottery_name
+  }
 
   // 当前矿石数
   growth.sumPoint = await juejin.getCurrentPoint()
